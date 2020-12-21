@@ -1,0 +1,48 @@
+﻿@model BENT1C.Grupo4.Models.Entrada
+
+@{
+    ViewData["Title"] = "Delete";
+}
+<h3>¿Esta seguro que desea eliminar esta entrada?</h3>
+<div>
+    <p style="color:red; font-style:italic">Todas las preguntas asociadas a esta entrada seran eliminadas junto con sus respuestas!</p>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Titulo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Titulo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Fecha)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Fecha)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Privada)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Privada)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Categoria)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Categoria.Nombre)
+        </dd class>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Miembro)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Miembro.Apellido)
+        </dd class>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index"  asp-controller="Home">Menu principal</a>
+    </form>
+</div>

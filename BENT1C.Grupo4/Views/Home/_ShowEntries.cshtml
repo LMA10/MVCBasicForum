@@ -1,0 +1,97 @@
+﻿@model IEnumerable<BENT1C.Grupo4.Models.Categoria>
+
+@{
+    const int SIN_ENTRADA = 0;
+    List<Entrada> ListaEntradaAux = new List<Entrada>();
+    string customClass = "";
+    string customState = "";
+    var listaOrdenada = new List<Entrada>();
+    var miembroActualId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+
+    foreach (var categoriaEntrada in Model.Select(e => e.Entradas))
+    {
+        foreach (var item in categoriaEntrada)
+        {
+            ListaEntradaAux.Add(item);
+        }
+    }
+
+
+    if (ViewBag.mostrarListaEntera == null)
+    {
+        listaOrdenada = ListaEntradaAux.OrderByDescending(f => f.Fecha).Take(5).ToList();
+    }
+    else
+    {
+        listaOrdenada = ListaEntradaAux.OrderByDescending(f => f.Fecha).ToList();
+    }
+
+}  
+
+@if (listaOrdenada.Count() != SIN_ENTRADA)
+{
+    foreach (var entrada in listaOrdenada)
+    {
+        @if (entrada.Privada)
+        {
+            customClass = "badge badge-danger";
+            customState = "Privado";
+        }
+        else
+        {
+            customClass = "badge badge-success";
+            customState = "Publico";
+        }
+
+        <div class="card">
+            <h5 class="card-header card-link">@Html.DisplayFor(modelItem => entrada.Categoria.Nombre)</h5>
+            <div class="card-body">
+                <div class="NameDescPost">
+                    <b>@Html.DisplayFor(modelItem => entrada.Miembro.Nombre)_@Html.DisplayFor(modelItem => entrada.Miembro.Apellido)</b>
+                    -
+                    <span>publicado el dia @Html.DisplayFor(modelItem => entrada.Fecha) </span>
+
+                    <span class="@customClass">@customState</span>
+                </div>
+                <h5 class="card-title">@Html.DisplayFor(modelItem => entrada.Titulo)</h5>
+                <p class="card-text">@Html.DisplayFor(modelItem => entrada.Preguntas.FirstOrDefault(p => p.EntradaId == entrada.Id).Descripcion)</p>
+
+              
+                @if ((entrada.Privada && miembroActualId != entrada.MiembroId) && (!@entrada.MiembrosHabilitados.Where(a => a.Habilitado == true)
+                    .Any(a => a.IdMiembro == miembroActualId)))
+                {
+                    if(User.IsInRole(nameof(Rol.Administrador)))
+                    {
+                        @Html.ActionLink("Responder", "Details", "Entradas", new { id = entrada.Id }, new { @class = "btn btn-primary" })
+                    }
+                    else
+                    {
+                        <form method="post" asp-action="Create" asp-controller="EntradaMiembros">
+                            <input type="hidden" name="idEntrada" value="@entrada.Id" />
+                            <input type="hidden" name="idMiembro" value="@miembroActualId" />
+                            <input type="submit" value="Solicitar Acceso" class="btn btn-danger" />
+                        </form>
+                    }
+                }
+                else
+                {
+                    @Html.ActionLink("Responder", "Details", "Entradas", new { id = entrada.Id }, new { @class = "btn btn-primary" })
+                }
+
+
+                @if (User.IsInRole(nameof(Rol.Administrador)))
+                {
+                    @Html.ActionLink("X", "Delete", "Entradas", new { id = entrada.Id }, new { @class = "btn btn-danger alignRemove" })
+                }
+            </div>
+            <div>
+
+            </div>
+        </div>
+        <br />
+    }
+}
+
+
+

@@ -1,0 +1,39 @@
+﻿@{
+
+    List<Categoria> categorias = ViewBag.listaCategorias;
+    List<Entrada> entradas = ViewBag.listaEntradas;
+    List<Miembro> miembros = ViewBag.listaMiembros;
+    var top5preg = entradas.OrderByDescending(i => i.Preguntas.Count).Take(5);
+    var startDate = DateTime.Today.AddMonths(-1);
+    var top3miembros = miembros.OrderByDescending(m => m.Entradas.Count(x => x.Fecha > startDate)).Take(3);
+
+
+}
+
+<div class="card">
+    <div class="card-header">
+        <b>Top 5 Entradas</b>
+    </div>
+    <ul class="list-group list-group-flush">
+        @foreach (Entrada ent in top5preg)
+        {
+            <li class="list-group-item list-group-item-action">
+              <a style="color:inherit" asp-action="Details" asp-controller="Entradas" asp-route-id="@ent.Id">
+                @ent.Titulo <span style="color:mediumblue;"> @ent.Preguntas.Count</span>
+              </a>
+            </li>
+        }
+    </ul>
+</div>
+<br />
+<div class="card">
+    <div class="card-header">
+        <b>Top 3 Miembros</b>
+    </div>
+    <ul class="list-group list-group-flush">
+        @foreach (Miembro mie in top3miembros)
+        {
+            <li class="list-group-item list-group-item-action">@mie.Nombre @mie.Apellido <span style="color:mediumblue"> @mie.Entradas.Count</span></li>
+        }
+    </ul>
+</div>

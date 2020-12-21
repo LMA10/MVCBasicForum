@@ -1,0 +1,130 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BENT1C.Grupo4</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/alertifyjs/css/alertify.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <link rel="icon" href="~/user_accounts_15362.ico" />
+
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark navbar-toggleable-sm border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BENT1C.Grupo4</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse navbarStyle">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                @Html.ActionLink("Solicitudes pendientes", "Index", "EntradaMiembros", new { id = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) }, new { @class = "btn", @style = "color:white" })
+                            </li>
+                            if (@ViewBag.cantidadPendientes > 0)
+                            {
+                                <li class="nav-item" style="color:red">
+                                    <span class="badge badge-danger">@ViewBag.cantidadPendientes</span>
+                                </li>
+                            }
+                        }
+                    </ul>
+
+                    <ul class="navbar-nav position-absolute">
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="menuOpciones" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @User.FindFirstValue(ClaimTypes.GivenName)
+                                    <span class="caret"></span>
+                                </button>
+                                <div class="dropdown-menu" aria-labelledby="menuOpciones">
+                                    @if (User.IsInRole(nameof(Rol.Administrador)))
+                                    {
+                                        <a class="nav-link text-dark" asp-area="" asp-controller="Test" asp-action="Index">Foro-admin</a>
+                                    }
+
+                                    <form id="logoutForm" method="post" asp-controller="Accesos" asp-action="Salir">
+                                        <button type="submit" class="dropdown-item" id="Salir">
+                                            Salir
+                                        </button>
+                                    </form>
+                                </div>
+                            </li>
+                        }
+                     
+                        else
+                        {
+                            <li class="ml-1">
+                                <a asp-controller="Miembros" asp-action="Create" class="nav-link text-light">
+                                    Registrar
+                                </a>
+                            </li>
+                            <li class="ml-1">
+                                <a asp-controller="Accesos" asp-action="Ingresar" class="nav-link text-light">
+                                    Ingresar
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2020 - BENT1C.Grupo4 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/alertifyjs/alertify.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @if (TempData["Logged in"] as bool? ?? false)
+    {
+        <script>
+            alertify.success('¡Bienvenido @User.Identity.Name!' );
+        </script>
+    }
+
+    @if (TempData["Nueva entrada"] as bool? ?? false)
+    {
+        <script>
+            alertify.success('Se creó una nueva entrada');
+        </script>
+    }
+
+    @if (TempData["Log out"] as bool? ?? false)
+    {
+        <script>
+            alertify.success('¡Hasta Luego!');
+        </script>
+    }
+
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

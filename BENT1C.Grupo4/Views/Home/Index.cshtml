@@ -1,0 +1,47 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (User.IsInRole(nameof(Rol.Miembro)))
+{
+    <div class="row">
+        <div class="col-12">
+            <div>
+                <a class="btn btn-danger" asp-action="CreateEntry">+ Nueva Entrada</a>
+            </div>
+        </div>
+    </div>
+}
+<br />
+<div class="row">
+    <div class="col-2 text-center">
+        <partial name="_ShowCategories.cshtml" />
+    </div>
+    <div class="col-8">
+        <partial name="_ShowEntries.cshtml" />
+    </div>
+    <div class="col-2 text-center">
+        <partial name="_ShowTops.cshtml" />
+    </div>
+
+</div>
+
+@if (TempData["peticionEntradaRealizadaRepetida"] as bool? ?? false)
+{
+    @section Scripts
+    {
+        <script>
+            alertify.error('Lo sentimos, usted ya ha realizado una peticion de acceso a esta entrada');
+        </script>
+    }
+}
+
+@if (TempData["peticionEntradaRealizada"] as bool? ?? false)
+{
+    @section Scripts
+    {
+        <script>
+            alertify.success('Se ha enviado una solicitud para aprobar su acceso a esta entrada');
+        </script>
+    }
+}

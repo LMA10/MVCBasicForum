@@ -1,0 +1,223 @@
+﻿@model BENT1C.Grupo4.Models.Entrada
+
+@{
+    ViewData["Title"] = "Details";
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">*@
+    var miembroActualId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+}
+
+
+@* Crear nueva pregunta *@
+<div class="card">
+    <h5 class="card-header card-link bg-primary"><span style="color:white">@Html.DisplayFor(modelItem => Model.Categoria.Nombre)</span></h5>
+    <div class="card-body">
+        <div class="NameDescPost">
+            <b>@Html.DisplayFor(modelItem => Model.Miembro.Nombre)_@Html.DisplayFor(modelItem => Model.Miembro.Apellido)</b>
+            -
+            <span>publicado el dia @Html.DisplayFor(modelItem => Model.Fecha) </span>
+
+        </div>
+        <br />
+        <p class="card-title">@Html.DisplayFor(modelItem => Model.Titulo)</p>
+        <br />
+        <form method="post" asp-action="Create" asp-controller="Preguntas">
+            <textarea name="textArea" class="form-control" rows="5" placeholder="Escriba su pregunta aqui..."></textarea>
+            <input type="hidden" name="idEntrada" value="@Model.Id" />
+            <input type="hidden" name="miembroId" value="@miembroActualId" />
+            <br />
+
+            @if (!@Model.Preguntas.OrderBy(f => f.Fecha).FirstOrDefault().Activa)
+            {
+                <input disabled type="submit" value="Crear pregunta" class="btn btn-primary form-control" />
+                <br />
+                <br />
+
+                <p class="bg-warning form-control text-center">El autor ha deshabilitado mas preguntas a esta entrada</p>
+            }
+            else
+            {
+                <input type="submit" value="Crear pregunta" class="btn btn-primary form-control" />
+            }
+        </form>
+
+        @if (miembroActualId == Model.MiembroId)
+        {
+            <form method="post" asp-action="CambiarEstadoPregunta" asp-controller="Preguntas">
+                <input type="hidden" name="preguntaId" value="@Model.Preguntas.OrderBy(f => f.Fecha).FirstOrDefault().Id" />
+                <input type="hidden" name="entradaId" value="@Model.Id" />
+                <br />
+                <div class="alignRemove">
+                    <input type="submit" value="Activar/Desactivar pregunta" class="btn btn-danger" />
+                </div>
+            </form>
+        }
+
+    </div>
+</div>
+
+<br />
+
+@* Mostrar preguntas cargadas *@
+<div class="card">
+    <h5 class="card-header card-link bg-primary"><span style="color:white">@Html.DisplayFor(modelItem => Model.Preguntas.Count) preguntas</span></h5>
+    @foreach (var pregunta in Model.Preguntas.OrderBy(f => f.Fecha))
+    {
+        if (pregunta.Id != null)
+        {
+
+    <div class="card-body">
+        <div class="card-subtitle">
+            <div class="NameDescPost">
+                <b>@(pregunta.Miembro.Nombre)_@(pregunta.Miembro.Apellido)</b>
+                -
+                <span>publicado el dia @Html.DisplayFor(modelItem => pregunta.Fecha) </span>
+            </div>
+            <div id="floatRespuestas">
+                <span style="color: #3478C2">
+                    @pregunta.Respuestas.Count respuestas
+                </span>
+            </div>
+
+            <p class="card-text">@Html.DisplayFor(modelItem => pregunta.Descripcion)</p>
+        </div>
+
+
+        @* Cargar respuestas a las preguntas cargadas *@
+        <form method="post" asp-action="Create" asp-controller="Respuestas" id="hideForm">
+            <textarea name="respuestaDesc" class="form-control" rows="1" placeholder="Escriba su respuesta aqui..."></textarea>
+            <input type="hidden" name="miembroId" value="@miembroActualId" />
+            <input type="hidden" name="preguntaId" value="@pregunta.Id" />
+            <input type="hidden" name="entradaId" value="@Model.Id" />
+            <br />
+            @if (Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)) != pregunta.MiembroId)
+            {
+                <input type="submit" value="Responder" class="btn btn-primary" />
+            }
+            else
+            {
+                <input disabled value="Responder" class="btn btn-primary" />
+            }
+        </form>
+
+        <br />
+
+        @* ver respuestas cargadas *@
+        @foreach (var respuesta in pregunta.Respuestas)
+        {
+
+            var maxLike = pregunta.Respuestas.Select(r => r.Reacciones.Count(a => a.MeGusta == true)).Max();
+            var maxDislike = pregunta.Respuestas.Select(r => r.Reacciones.Count(a => a.MeGusta == false)).Max();
+
+            if (respuesta.Miembro != null)
+            {
+                string reaccion = "";
+
+                if (maxLike != 0)
+                {
+                    if (respuesta.Reacciones.Count(a => a.MeGusta == true) == maxLike)
+                    {
+                        reaccion = "border border-success";
+                    }
+                }
+
+                if (maxDislike != 0)
+                {
+                    if (respuesta.Reacciones.Count(a => a.MeGusta == false) == maxDislike)
+                    {
+                        reaccion = "border border-danger";
+                    }
+                }
+
+                <div class="@reaccion">
+                    <div class="card">
+                        <div class="card-header bg-success">
+
+                        </div>
+                        <div class="card-body">
+                            <div class="NameDescPost">
+                                <b>@respuesta.Miembro.Nombre @respuesta.Miembro.Apellido</b>
+                                -
+                                <span>publicado el dia @respuesta.Fecha </span>
+                            </div>
+                            <p class="card-text">@respuesta.Descripcion</p>
+                            <div class="form-check form-check-inline">
+                                @if (respuesta.MiembroId != @miembroActualId)
+                                {
+                                    <div>
+                                        <form method="post" asp-action="Create" asp-controller="Likes">
+                                            <input type="hidden" name="RespuestaId" value="@respuesta.Id" />
+                                            <input type="hidden" name="MiembroId" value="@miembroActualId" />
+                                            <input type="hidden" name="meGusta" value="true" />
+                                            <input type="hidden" name="idEntrada" value="@respuesta.Pregunta.EntradaId" />
+                                            @if (!respuesta.Reacciones.Any(m => m.MiembroId == @miembroActualId && m.MeGusta == true))
+                                            {
+                                                <button type="submit" id="likes"><i class="fa fa-thumbs-o-up fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" name="idLike" value="@respuesta.Reacciones.FirstOrDefault(r => r.MiembroId == miembroActualId).Id" />
+                                                <button type="submit" id="likes"><i class="fa fa-thumbs-up fa-lg" aria-hidden="true"></i></button>
+                                            }
+
+                                        </form>
+                                    </div>
+                                    <div class="form-check">
+                                        <form method="post" asp-action="Create" asp-controller="Likes">
+                                            <input type="hidden" name="RespuestaId" value="@respuesta.Id" />
+                                            <input type="hidden" name="MiembroId" value="@miembroActualId" />
+                                            <input type="hidden" name="meGusta" value="false" />
+                                            <input type="hidden" name="idEntrada" value="@respuesta.Pregunta.EntradaId" />
+                                            @if (!respuesta.Reacciones.Any(m => m.MiembroId == @miembroActualId && m.MeGusta == false))
+                                            {
+                                                <button type="submit" id="likes"><i class="fa fa-thumbs-o-down fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                            else
+                                            {
+                                                <input type="hidden" name="idLike" value="@respuesta.Reacciones.FirstOrDefault(r => r.MiembroId == miembroActualId).Id" />
+                                                <button type="submit" id="likes"><i class="fa fa-thumbs-down fa-lg" aria-hidden="true"></i></button>
+                                            }
+                                        </form>
+                                    </div>
+                                }
+                            </div>
+
+                            <div style="color:#007bff">
+                                @respuesta.Reacciones.Where(r => r.MeGusta == true).Count() Like
+                                @respuesta.Reacciones.Where(r => r.MeGusta == false).Count() Dislike
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            <br />
+        }
+        @if (User.IsInRole(nameof(Rol.Administrador)))
+        {
+            @Html.ActionLink("X", "Delete", "Preguntas", new { id = pregunta.Id }, new { @class = "btn btn-danger alignRemove" })
+        }
+    </div>
+        }
+        <hr />
+
+    }
+</div>
+
+@if (TempData["validaPreguntaAdmin"] as bool? ?? false)
+{
+    @section Scripts {
+        <script>
+            alertify.error('¡pss, esta funcion es solo para usuarios no administradores!');
+        </script>
+    }
+}
+
+@if (TempData["validaLike"] as bool? ?? false)
+{
+    @section Scripts {
+        <script>
+            alertify.error('Lo sentimos, usted ya ha reaccionado a esta respuesta');
+        </script>
+    }
+}
+
+

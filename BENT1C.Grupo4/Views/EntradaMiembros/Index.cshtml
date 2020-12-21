@@ -1,0 +1,57 @@
+﻿@model IEnumerable<BENT1C.Grupo4.Models.EntradaMiembro>
+
+@{
+    ViewData["Title"] = "Index";
+    
+}
+
+<h1>Listado de solicitudes pendientes por aprobar</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Entrada)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Miembro)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Entrada.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Habilitado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Entrada.Titulo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Miembro.Nombre)
+                @Html.DisplayFor(modelItem => item.Miembro.Apellido)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Entrada.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Habilitado)
+            </td>
+            <td>
+                <div class="form-inline">
+                    <form method="post" asp-action="CambiarEstadoEntradaMiembro" asp-controller="EntradaMiembros">
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="submit" value="Cambiar estado entrada" class="btn btn-success" />
+                    </form>
+                        @Html.ActionLink("Eliminar", "Delete", "EntradaMiembros", new { id = item.Id}, new { @class = "btn btn-danger" })
+                </div>
+                @*@Html.ActionLink("Habilitar", "Delete", "Preguntas", new { id = item.Id,  }, new { @class = "btn btn-danger alignRemove" })*@
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
