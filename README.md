@@ -1,8 +1,3 @@
-![image](https://user-images.githubusercontent.com/34746719/110036402-b5a4d680-7d1b-11eb-9411-775812350275.png)
-![image](https://user-images.githubusercontent.com/34746719/110036433-c1909880-7d1b-11eb-8afd-79e4638c7882.png)
-![image](https://user-images.githubusercontent.com/34746719/110036362-a58cf700-7d1b-11eb-8563-4ae4fc905d45.png)
-![image](https://user-images.githubusercontent.com/34746719/110036464-cfdeb480-7d1b-11eb-8c94-dbfb42c2ce49.png)
-
 # Foro 📖
 Sistema que permite la administración general de un Foro (de cara a los administradores): Usuarios, Miembros, Administradores, Pregunta, Respuesta, MeGusta, etc., como así también, dar la posibilidad a los usuarios de navegar el foro y realizar preguntas y/o respuestas. 
 utilizando ASP.NET MVC Core versión 3.1.
@@ -163,3 +158,12 @@ utilizando ASP.NET MVC Core versión 3.1.
 - Los miembros no pueden eliminar las entradas ni deshabilitarlas.
 - Sólo los administradores pueden eliminar entradas con sus preguntas y respuestas funcionando como moderadores en caso de que éstas tengan contenido inapropiado.
 - Los accesos a las funcionalidades y/o capacidades, estan basadas en los roles que tenga cada individuo.
+
+**Screenshots**
+![image](https://user-images.githubusercontent.com/34746719/110036402-b5a4d680-7d1b-11eb-9411-775812350275.png)
+<hr />
+![image](https://user-images.githubusercontent.com/34746719/110036433-c1909880-7d1b-11eb-8afd-79e4638c7882.png)
+<hr />
+![image](https://user-images.githubusercontent.com/34746719/110036362-a58cf700-7d1b-11eb-8563-4ae4fc905d45.png)
+<hr />
+![image](https://user-images.githubusercontent.com/34746719/110036464-cfdeb480-7d1b-11eb-8c94-dbfb42c2ce49.png)
